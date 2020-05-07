@@ -1,26 +1,23 @@
 const request = require('request');
-// Allow user to search for breed using command-line arguments
-const breed = process.argv[2];
-// Want to find and test breed search
-// Using request, fetch data
-const getWebPage = (uri, breed) => {
-  const query = `?q=${breed}`;
-  const page = uri + query;
-  
-  request(page, (error, response, body) => {
-    if (error) {
-      console.log(`There's and error: ${error}`);
-    }
 
+const fetchPage = (breed, callback) => {
+  const page = `https://api.thecatapi.com/v1/breeds/search?q=${breed}`;
+
+  request(page, (error, response, body) => {
+    //If page doens't exist
     const parsed = JSON.parse(body);
 
-    //If page doens't exist
+    if (error) {
+      callback(error, null);
+    }
+
     if (parsed[0]) {
-      console.log(parsed[0].description);
+      callback(null, parsed[0].description);
     } else {
-      console.log('Breed not found');
+      callback("Couldn't find breed", null);
     }
   });
 };
 
-getWebPage('https://api.tllhecatapill.com/v1/breeds/////search', breed);
+
+module.exports = fetchPage;
